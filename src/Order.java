@@ -1,17 +1,24 @@
-import java.util.ArrayList;
+import java.util.*;
 
 public class Order {
-    private final ArrayList<Product> cart;
+    private final HashMap<Product, Integer> cartList;
+    private HashMap<Product, Integer> orderList;
     public Order(){
-        this.cart = new ArrayList<>();
+        this.cartList  = new HashMap<Product, Integer>();
     }
-    public ArrayList<Product> getCart() {
-        return cart;
+    public HashMap<Product, Integer> getCartList(){
+        return cartList;
     }
-    public void add(Product product){
-        cart.add(product);
+    public HashMap<Product, Integer> getOrderList(){
+        return orderList;
+    }
+    public void add(Product product, int cnt){
+        cartList.put(product, cnt);
+    }
+    public void remove(Product product){
+        cartList.remove(product);
     }
     public void clear(){
-        cart.clear();
+        cartList.clear();
     }
 }

@@ -1,6 +1,6 @@
 public class Product extends Menu {
 
-    private final double price;
+    private double price;
 
     public Product(String name, double price, String explain) {
         super(name, explain);
@@ -9,5 +9,9 @@ public class Product extends Menu {
 
     public double getPrice() {
         return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
