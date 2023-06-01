@@ -191,21 +191,30 @@ public class Main {
         answer = sc.nextInt();
         if(answer == 1){
             totalSalePrice = totalSalePrice.add(totalPrice);
-
-/*            int cnt = 0;
-            double price = 0.0;
-            for(Map.Entry<Product, Integer> a : orderItem.entrySet()){
-                for(Map.Entry<Product, Integer> b : myCartList.entrySet()){
-                    if(Objects.equals(a.getKey().getName(), b.getKey().getName())){
-                        cnt = a.getValue() + b.getValue();
-                        price = a.getKey().getPrice() + b.getKey().getPrice();
-                        a.getKey().setPrice(price);
-                        orderItem.remove(a.getKey());
-                        System.out.println("지우고 넣기 : " + a.getKey() + "     " + a);
-                        orderItem.put(a.getKey(), cnt);
+            List<Product> removeList = new ArrayList<>();
+            if(orderItem.size() != 0){
+                int cnt = 0;
+                double price = 0.0;
+                for(Map.Entry<Product, Integer> a : orderItem.entrySet()){
+                    for(Map.Entry<Product, Integer> b : myCartList.entrySet()){
+                        if(Objects.equals(a.getKey().getName(), b.getKey().getName())){
+                            BigDecimal orderPrice = new BigDecimal(String.valueOf(a.getKey().getPrice()));
+                            BigDecimal productPrice = new BigDecimal(String.valueOf(b.getKey().getPrice()));
+                            cnt = a.getValue() + b.getValue();
+                            orderPrice = orderPrice.add(productPrice);
+                            double aPrice = orderPrice.doubleValue();
+                            a.getKey().setPrice(aPrice);
+                            removeList.add(b.getKey());
+                            orderItem.put(a.getKey(),cnt);
+                        }
                     }
                 }
-            }*/
+                for (Product product : removeList) {
+                    myCartList.remove(product);
+                }
+            }
+            orderItem.putAll(myCartList);
+
             cartList.clear();
             System.out.println("주문이 완료되었습니다!\n");
             System.out.println("대기번호는 [ " + num + " ] 번 입니다.");
@@ -249,8 +258,11 @@ public class Main {
             System.out.println("[ 총 판매상품 목록 현황 ]");
             System.out.println("현재까지 총 판매된 상품 목록은 아래와 같습니다.\n");
             for(Map.Entry<Product, Integer> product : orderItem.entrySet()){
-                System.out.println("- "+ product + "       " + product.getKey().getName() + " | W " + product.getKey().getPrice() + " | " + product.getValue() +"개");
+                System.out.println("- " + product.getKey().getName() + " | W " + product.getKey().getPrice() + " | " + product.getValue() +"개");
             }
+            System.out.println("\n1. 돌아가기");
+            answer = sc.nextInt();
+            getMainMenu();
         }
     }
     // 시간 늦추기
