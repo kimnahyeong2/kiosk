@@ -12,6 +12,7 @@ public class Main {
     static int num=1;
     // 총 구매 금액
     static BigDecimal totalSalePrice= BigDecimal.valueOf(0);
+    // 총 주문 목록
     static HashMap<Product, Integer> orderItem = new HashMap<>();
 
     public static void main(String[] args) {
@@ -22,72 +23,87 @@ public class Main {
     // 메인 메뉴판 ArrayList<Menu>에 추가
     private static void getMainMenu(){
         ArrayList<Menu> mainMenu = new ArrayList<>();
-        mainMenu.add(new Menu("Gnocchi & Pasta  ", "시그니처 뇨끼와 파스타"));
-        mainMenu.add(new Menu("Brunch           ", "아침에 즐기기 좋은 브런치 메뉴"));
-        mainMenu.add(new Menu("Side Menu        ", "오늘의 수프와 추가 가능한 메뉴"));
-        mainMenu.add(new Menu("Beverage         ", "커피, 티, 주스, 에이드 등 마실 것"));
-        mainMenu.add(new Menu("Order            ", "장바구니를 확인 후 주문합니다."));
-        mainMenu.add(new Menu("Cancel           ", "진행중인 주문을 취소합니다."));
+        mainMenu.add(new Menu("Gnocchi & Pasta", "시그니처 뇨끼와 파스타"));
+        mainMenu.add(new Menu("Brunch", "아침에 즐기기 좋은 브런치 메뉴"));
+        mainMenu.add(new Menu("Side Menu", "오늘의 수프와 추가 가능한 메뉴"));
+        mainMenu.add(new Menu("Beverage", "커피, 티, 주스, 에이드 등 마실 것"));
+        mainMenu.add(new Menu("Order", "장바구니를 확인 후 주문합니다."));
+        mainMenu.add(new Menu("Cancel", "진행중인 주문을 취소합니다."));
+        mainMenu.add(new Menu("Exit", "종료"));
         printMainMenu(mainMenu);
     }
 
     // 메인 메뉴판 출력하기
     private static void printMainMenu(ArrayList<Menu> mainMenu) {
+        // 메뉴출력
         System.out.println("\nCozy Meal 에 오신걸 환영합니다.");
         System.out.println("아래 메뉴판을 보시고 메뉴를 골라 입력해주세요!");
         System.out.println("\n[ Cozy Meal Menu ]");
-        for (int i = 0; i < mainMenu.size() - 2; i++) {
-            System.out.println((i + 1) + ". " + mainMenu.get(i).getName() + " | " + mainMenu.get(i).getExplain());
+        for (int i = 0; i < mainMenu.size() - 3; i++) {
+            System.out.printf("%s. %-15s | %s\n",(i + 1),mainMenu.get(i).getName(), mainMenu.get(i).getExplain());
         }
         System.out.println("\n[ Order Menu ]");
-        for (int i = mainMenu.size() - 2; i < mainMenu.size(); i++) {
-            System.out.println((i + 1) + ". " + mainMenu.get(i).getName() + " | " + mainMenu.get(i).getExplain());
+        for (int i = mainMenu.size() - 3; i < mainMenu.size(); i++) {
+            System.out.printf("%s. %-15s | %s\n",(i + 1),mainMenu.get(i).getName(), mainMenu.get(i).getExplain());
         }
+
         sc = new Scanner(System.in);
         answer = sc.nextInt();
-        if (answer > 0 && answer <= mainMenu.size() - 2) { // 메뉴 선택했을 경우
+
+        if (answer > 0 && answer <= mainMenu.size() - 3) { // 메뉴 선택했을 경우
             getProductMenu(answer, mainMenu);
         }
-        else if(answer == mainMenu.size()-1){ // 주문하기 선택
+        else if(answer == mainMenu.size()-2){ // 주문하기 선택
             getOrder();
         }
-        else if(answer == mainMenu.size()){ // 주문취소 선택
+        else if(answer == mainMenu.size()-1){ // 주문취소 선택
             deleteOrder();
         }
-        else {
+        else if(answer == 0) { // 총 주문 확인
             totalSale();
         }
+        else if(answer == mainMenu.size()){ // 종료
+            return;
+        }
+        else{
+            noAnswer();
+            getMainMenu();
+        }
+    }
+
+    private static void noAnswer() {
+        System.out.println("\n잘못 입력하셨습니다. 다시 입력해주세요:)");
     }
 
     // 각 카테고리의 상품
     private static void getProductMenu(int answer, ArrayList<Menu> mainMenu) {
         delay();
         System.out.println("\n아래 메뉴판을 보시고 상품을 골라 입력해주세요!");
-        System.out.println("\n[ " + mainMenu.get(answer-1).getName().trim() + " Menu ]");
+        System.out.println("\n[ " + mainMenu.get(answer-1).getName() + " Menu ]");
 
         ArrayList<Product> productMenu = new ArrayList<>();
         switch (answer - 1) {
             case 0 -> {
-                productMenu.add(new Product("감바스 뇨끼      ", 2.3, "호밀식빵이 같이 제공됩니다."));
-                productMenu.add(new Product("단호박 크림 뇨끼  ", 2.0, "단호박과 부드러운 크림이 만난 뇨끼"));
-                productMenu.add(new Product("투움바 파스타     ", 1.7, "맵기는 크림 / 신라면 / 불닭 중 선택 가능합니다."));
-                productMenu.add(new Product("할라피뇨 파스타   ", 1.7, "매콤한 파스타로 느끼하지 않은 파스타"));
-                productMenu.add(new Product("바질페스토 파스타 ", 1.7, "요즘 유행인 바질페스토가 들어간 파스타"));
+                productMenu.add(new Product("감바스 뇨끼", 2.3, "호밀식빵이 같이 제공됩니다."));
+                productMenu.add(new Product("단호박 크림 뇨끼", 2.0, "단호박과 부드러운 크림이 만난 뇨끼"));
+                productMenu.add(new Product("투움바 파스타", 1.7, "맵기는 크림 / 신라면 / 불닭 중 선택 가능합니다."));
+                productMenu.add(new Product("할라피뇨 파스타", 1.7, "매콤한 파스타로 느끼하지 않은 파스타"));
+                productMenu.add(new Product("바질페스토 파스타", 1.7, "요즘 유행인 바질페스토가 들어간 파스타"));
             }
             case 1 -> {
-                productMenu.add(new Product("베이글 프렌치 토스트          ", 1.4, "쫄깃한 베이글로 만든 프렌치 토스트"));
-                productMenu.add(new Product("코지밀 플레이트              ", 1.3, "계란, 당근라페와 함께 드시면 더욱 맛있습니다."));
-                productMenu.add(new Product("리코타 바질 페스토 샌드위치    ", 1.3, "리코타 치즈와 바질의 조합"));
-                productMenu.add(new Product("베이컨 토마토 디럭스 샌드위치  ", 1.3, "베이컨과 토미토의 조합은 실패없다!"));
-                productMenu.add(new Product("에플 브리치즈 샌드위치        ", 1.2, "사과와 브리치즈의 조합"));
+                productMenu.add(new Product("베이글 프렌치 토스트", 1.4, "쫄깃한 베이글로 만든 프렌치 토스트"));
+                productMenu.add(new Product("코지밀 플레이트", 1.3, "계란, 당근라페와 함께 드시면 더욱 맛있습니다."));
+                productMenu.add(new Product("리코타 바질 페스토 샌드위치", 1.3, "리코타 치즈와 바질의 조합"));
+                productMenu.add(new Product("베이컨 토마토 디럭스 샌드위치", 1.3, "베이컨과 토미토의 조합은 실패없다!"));
+                productMenu.add(new Product("에플 브리치즈 샌드위치", 1.2, "사과와 브리치즈의 조합"));
             }
             case 2 -> {
-                productMenu.add(new Product("오늘의 스프     ", 0.7, "매일 바뀌는 오늘의 수프"));
-                productMenu.add(new Product("감자튀김        ", 0.7, "짭조롬한 감자튀김"));
-                productMenu.add(new Product("스크램블        ", 0.5, "몽실몽실한 스크램블"));
-                productMenu.add(new Product("크로와상        ", 0.4, "버터향 가득한 크로와상"));
-                productMenu.add(new Product("호밀식빵        ", 0.2, "감바스 뇨끼와 잘 어울리는 호밀식빵"));
-                productMenu.add(new Product("딸기 잼 & 버터  ", 0.15, "딸기잼과 버터의 조합"));
+                productMenu.add(new Product("오늘의 스프", 0.7, "매일 바뀌는 오늘의 수프"));
+                productMenu.add(new Product("감자튀김", 0.7, "짭조롬한 감자튀김"));
+                productMenu.add(new Product("스크램블", 0.5, "몽실몽실한 스크램블"));
+                productMenu.add(new Product("크로와상", 0.4, "버터향 가득한 크로와상"));
+                productMenu.add(new Product("호밀식빵", 0.2, "감바스 뇨끼와 잘 어울리는 호밀식빵"));
+                productMenu.add(new Product("딸기 잼 & 버터", 0.15, "딸기잼과 버터의 조합"));
             }
             case 3 -> {
                 productMenu.add(new Product("아메리카노", 0.45, "현대인의 필수템"));
@@ -105,13 +121,34 @@ public class Main {
         printProductMenu(productMenu, answer);
     }
 
+    // 한글은 format이 제대로 되지 않기 때문에 method를 사용해 작성
+    private static int getKorCnt(String kor) {
+        int cnt = 0;
+        for (int i = 0 ; i < kor.length() ; i++) {
+            if (kor.charAt(i) >= '가' && kor.charAt(i) <= '힣') {
+                cnt++;
+            }
+        } return cnt;
+    }
+    public static String convert(String word, int size) {
+        int len = size -getKorCnt(word);
+        String num = String.format("-%d", len);
+        String formatter = String.format("%%%ss", num);
+        return String.format(formatter, word);
+    }
     // 선택한 카테고리 상품 출력
     private static void printProductMenu(ArrayList<Product> productMenu, int category) {
         for(int i=0; i<productMenu.size(); i++){
-            System.out.println((i+1) + ". " + productMenu.get(i).getName() + " | W " + productMenu.get(i).getPrice() + " | " + productMenu.get(i).getExplain());
+            System.out.printf((i+1) + ". " + convert(productMenu.get(i).getName(), 35) + " | ");
+            System.out.printf("W %-4s | %s\n", productMenu.get(i).getPrice(), productMenu.get(i).getExplain());
         }
         sc = new Scanner(System.in);
         answer = sc.nextInt();
+        if(answer > productMenu.size()){
+            noAnswer();
+            System.out.println();
+            printProductMenu(productMenu, category);
+        }
         addToCart(productMenu.get(answer-1), category);
     }
 
@@ -120,30 +157,43 @@ public class Main {
         delay();
         System.out.println("\n\"" + product.getName() + " | W " + product.getPrice() + " | " + product.getExplain() + "\"");
 
+        // 소수점 계산을 정확히 하기 위해 BigDecimal 사용
         BigDecimal price = new BigDecimal(String.valueOf(product.getPrice()));
         BigDecimal plusPrice = new BigDecimal(String.valueOf(0.1));
         double sumPrice = price.add(plusPrice).doubleValue();
 
         System.out.println("위 메뉴의 어떤 옵션으로 추가하시겠습니까?");
         System.out.println("1. Small(W " + price + ")        2. Medium(W " + sumPrice + ")");
+
         answer = sc.nextInt();
         if(answer == 1){
-            product.setName(product.getName().trim() + "(small)");
+            product.setName(product.getName() + "(small)");
             product.setPrice(product.getPrice());
-        } else{
-            product.setName(product.getName().trim() + "(medium)");
+        } else if(answer == 2){
+            product.setName(product.getName() + "(medium)");
             product.setPrice(sumPrice);
+        } else{
+            noAnswer();
+            addToCart(product, category);
         }
+
         delay();
+
         System.out.println("\n\"" + product.getName() + " | W " + product.getPrice() + " | " + product.getExplain() + "\"");
         System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?");
         System.out.println("1. 확인        2. 취소");
+
         answer = sc.nextInt();
         if(answer == 2){
             delay();
             getMainMenu();
         }
+        if(answer != 1){
+            noAnswer();
+            addToCart(product, category);
+        }
 
+        // 장바구니 추가 전 이미 같은 상품이 존재하는지 확인
         HashMap<Product, Integer> myCartList = cartList.getCartList();
         int cnt = 1;
         for(Map.Entry<Product, Integer> a : myCartList.entrySet()){
@@ -156,7 +206,7 @@ public class Main {
         cartList.add(product, cnt);
         product.setPrice(product.getPrice() * cnt);
 
-        System.out.println("\n"+product.getName().trim() + " 가 장바구니에 추가되었습니다.");
+        System.out.println("\n"+product.getName() + " 가 장바구니에 추가되었습니다.");
         delay();
         getMainMenu();
     }
@@ -180,10 +230,7 @@ public class Main {
             System.out.println(product.getKey().getName() + " | W " + product.getKey().getPrice() + " | " + product.getValue() +"개 | " + product.getKey().getExplain());
             plusPrice = new BigDecimal(String.valueOf(product.getKey().getPrice()));
             totalPrice = totalPrice.add(plusPrice);
-            System.out.println("plusPrice : " +plusPrice + "   totalPrice : " + totalPrice);
         }
-
-        //Double sum = sumPrice.doubleValue();
 
         System.out.println("\n[ Total ]");
         System.out.println("W " + totalPrice);
@@ -192,6 +239,9 @@ public class Main {
         if(answer == 1){
             totalSalePrice = totalSalePrice.add(totalPrice);
             List<Product> removeList = new ArrayList<>();
+            // 장바구니에 상품이 존재할 경우 바교 후 주문목록에 넣어줌
+            // Loop가 도는 중 Map이 삭제되면 오류가 발생함으로 List를 하나 선언해 삭제할 항목의 키값을 넣어줌
+            // Loop가 완전히 돌고 난 후 해당하는 값을 지워줌
             if(orderItem.size() != 0){
                 int cnt = 0;
                 double price = 0.0;
@@ -238,6 +288,9 @@ public class Main {
             cartList.clear();
             System.out.println("진행하던 주문이 취소되었습니다.");
         }
+        else{
+            System.out.println("초기 화면으로 돌아갑니다:)");
+        }
         getMainMenu();
     }
 
@@ -264,6 +317,7 @@ public class Main {
             answer = sc.nextInt();
             getMainMenu();
         }
+        getMainMenu();
     }
     // 시간 늦추기
     public static void delay(){
